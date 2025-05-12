@@ -18,6 +18,8 @@ Category = Applications
 		[[[configuration]]]
 		cyclecloud.hosts.standalone_dns.enabled = false
 		cyclecloud.hosts.simple_vpc_dns.enabled = false
+                ray.port = $RayPort
+                ray.client_server_port = $RayClientServerPort
 
 	    	[[[cluster-init ray:default:0.1.0]]]
 
@@ -26,8 +28,6 @@ Category = Applications
 	MachineType = $HeadMachineType
 	IsReturnProxy = $ReturnProxy
 	ComputerName = head 
-        ray.port = $RayPort
-        ray.client_server_port = $RayClientServerPort
 	
 		[[[cluster-init ray:head:0.1.0]]]
 
