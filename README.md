@@ -17,10 +17,11 @@ This project sets up a [Ray](https://github.com/ray-project/ray) cluster using A
 ``` bash
 git clone https://github.com/yuvmaz/cyclecloud-ray
 ```
-3. Switch to the `cyclecloud-ray` project directory and upload the project to cyclecloud locker.  If you enter a wrong locker name you'll get an error listing the right locker name.
+3. Switch to the `cyclecloud-ray` project directory, build and upload the project to cyclecloud locker.  If you enter a wrong locker name you'll get an error listing the right locker name.
 
 ``` bash
 cd cyclecloud-ray/
+cyclecloud project build
 cyclecloud project upload <locker name>
 ```
 4. Import the Ray template:
