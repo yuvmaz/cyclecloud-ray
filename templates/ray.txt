@@ -1,0 +1,158 @@
+######################
+# Ray                #
+######################
+
+[cluster Ray]
+IconUrl= https://th.bing.com/th/id/R.2b45ce81cbb62ae3249c5906cd7b8406?rik=hg4UfLfJExyiZA&riu=http%3a%2f%2fsoftwareengineeringdaily.com%2fwp-content%2fuploads%2f2020%2f02%2fray-logo.png&ehk=N4kH4zCF1cpxIlqGyGGKTz5lpuAeWY6r0pZhdTh2%2bjY%3d&risl=&pid=ImgRaw&r=0
+FormLayout = selectionpanel
+Category = Applications
+
+	[[node defaults]]
+	UsePublicNetwork = $UsePublicNetwork
+	Credentials = $Credentials
+	ImageName = $ImageName
+	SubnetId = $SubnetId
+	Region = $Region
+	KeyPairLocation = ~/.ssh/cyclecloud.pem
+
+		[[[configuration]]]
+		cyclecloud.hosts.standalone_dns.enabled = false
+		cyclecloud.hosts.simple_vpc_dns.enabled = false
+
+	    	[[[cluster-init ray:default:0.1.0]]]
+
+
+	[[node head]]
+	MachineType = $HeadMachineType
+	IsReturnProxy = $ReturnProxy
+	ComputerName = head 
+        ray.port = $RayPort
+        ray.client_server_port = $RayClientServerPort
+	
+		[[[cluster-init ray:head:0.1.0]]]
+
+		[[[network-interface eth0]]]
+		AssociatePublicIpAddress = $UsePublicNetwork 
+
+
+	[[nodearray worker]]
+	MachineType  = $WorkerMachineType
+	MaxCount = 100 
+	ComputerNamePrefix = worker-
+	
+
+		[[[cluster-init ray:worker:0.1.0]]]
+
+
+[parameters About]
+Order = 10
+
+	[[parameters About Ray]]
+	
+		[[[parameter ray]]]
+		HideLabel = true
+		Config.Plugin = pico.widget.HtmlTemplateWidget
+		Config.Template ='''<table role="presentation"><tr><td><img alt="Ray icon" src="https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png" height="128" width="392"></td></tr><tr><td><p>The Ray framework is an open-source Python-based system for scalable and distributed computing. It’s designed to make it easy to build applications that run across multiple CPUs or GPUs, whether on a single machine or a large cluster.</p></td></tr><tr><td><h3>Key Highlights:</h3</td></tr><tr><td><p><ul>Simple API: Write parallel and distributed code using familiar Python syntax.</ul>
+<ul>Scalability: Seamlessly scale from a laptop to a large cluster.</ul>
+<ul>Versatility: Supports a wide range of workloads including machine learning, data processing, and reinforcement learning.</ul></td></tr>
+<tr><td><h3>Use Cases:</h3></td></tr>
+<tr><td><ul>Distributed training of ML models</ul>
+<ul>Hyperparameter optimization</ul>
+<ul>Large-scale data preprocessing</ul>
+<ul>Real-time model serving</ul>
+</td></tr>
+<br/><br/><tr><td>See more details on the <a href="https://github.com/ray-project/ray" target="_blank">Ray Github site</a></tr></td>
+</table>
+'''
+
+[parameters Required Settings]
+Order = 20 
+
+	[[parameters Virtual Machines]]
+	Description = "Virtual machines for the cluster"
+	Order = 10
+
+	    [[[parameter Region]]]
+	    Label = Region
+	    Description = Deployment Location
+	    ParameterType = Cloud.Region
+	    DefaultValue = france.central
+
+	    [[[parameter HeadMachineType]]]
+	    Label = Head VM Type
+	    Description = The VM type for the Ray head node
+	    ParameterType = Cloud.MachineType
+	    DefaultValue = Standard_D2_v4
+
+	    [[[parameter WorkerMachineType]]]
+	    Label = Worker VM Type
+	    Description = The VM type for Ray worker nodes
+	    ParameterType = Cloud.MachineType
+	    DefaultValue =  Standard_D2_v4
+
+	    [[[parameter ImageName]]]
+	    Label = Base OS
+	    ParameterType = Cloud.Image
+	    Config.OS = linux
+	    DefaultValue = cycle.image.ubuntu22
+	    Config.Filter := Package in {"cycle.image.ubuntu20", "cycle.image.ubuntu22"}
+
+
+	[[parameters Networking]]
+	Description = "Network Settings"
+	Order=20
+
+	    [[[parameter SubnetId]]]
+	    Label = Subnet ID
+	    Description = Subnet Configuration
+	    ParameterType = Azure.Subnet
+	    Required = True 
+
+		[[[parameter RayPort]]]
+		Label = Application Port
+		Description = Port for Ray Application
+                Config.Plugin = pico.form.NumberTextBox
+                Config.MinValue = 1025
+	  	Config.MaxValue = 65536
+                Config.IntegerOnly = true
+		DefaultValue = 6379
+ 
+		[[[parameter RayClientServerPort]]]
+		Label = Client-Server Port
+		Description = Port for Client Connections 
+                Config.Plugin = pico.form.NumberTextBox
+                Config.MinValue = 1025
+	  	Config.MaxValue = 65536
+                Config.IntegerOnly = true
+		DefaultValue = 10001 
+
+
+
+[parameters Advanced Settings]
+Order = 30
+
+    [[parameters Azure Settings]]
+    Order = 10 
+
+        [[[parameter Credentials]]]
+        Description = The credentials for the cloud provider
+        ParameterType = Cloud.Credentials
+
+	[[parameters Advanced Networking]]
+	Order = 20
+
+        [[[parameter ReturnProxy]]]
+        Label = Return Proxy
+        DefaultValue = true
+        ParameterType = Boolean
+        Config.Label = Use SSH tunnel to connect to CycleCloud (required if direct access is blocked)
+
+        [[[parameter UsePublicNetwork]]]
+        Label = Public Head Node
+        DefaultValue = true
+        ParameterType = Boolean
+        Config.Label = Access master node from the Internet
+
+
+
+
